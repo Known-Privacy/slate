@@ -44,7 +44,7 @@ Opt-Out Machine expects for the API key to be included in all API requests to th
 `Authorization: meowmeowmeow`
 
 <aside class="notice">
-You must replace <code>meowmeowmeow</code> with your personal API key.
+You must replace <code>meowmeowmeow</code> with your API key.
 </aside>
 
 # Requests
@@ -59,11 +59,30 @@ curl "https://app.knownprivacy.com/api/v1/requests/j4l35j4K" \
 
 ```json
 {
-  "id": 2,
-  "name": "Max",
-  "breed": "unknown",
-  "fluffiness": 5,
-  "cuteness": 10
+  "file_count": 0,
+  "id": "j4l35j4K",
+  "request_types": ["access", "opt-out"],
+  "opt_out_completed": false,
+  "state": "active",
+  "submitted_at": "2022-12-16T23:13:37.920Z",
+  "acknowledged_at": "2022-12-16T23:20:01.842Z",
+  "person": {
+    "name": "Isabel Laurent",,
+    "dob": "1950-11-06",
+    "email": "isabellaurent@yahoo.com",
+    "email_addresses": ["il@gmail.com"],
+    "phone": "+19712708285",
+    "address": "72 County Road 10",
+    "address2": null,
+    "city": "Sunnyville",
+    "state": "NY",
+    "postal_code": "04822",
+    "identity_verification_proof": {
+      "url": "https://app.knownprivacy.com/documents/23fcfb9a-0d8a-4685-86db-7cedbbac49aa",
+      "access_code": "RM6_CmfO",
+      "valid_until": "2023-02-02T23:13:37.920Z",
+    }
+  }
 }
 ```
 
@@ -82,9 +101,11 @@ ID | The ID of the request to retrieve
 ## Acknowledge a Specific Request
 
 ```shell
-curl "https://app.knownprivacy.com/api/v1/requests/j4l35j4K/ack" \
+curl "https://app.knownprivacy.com/api/v1/ack" \
   -X POST \
+  -H "Content-Type: application/json" \
   -H "Authorization: meowmeowmeow"
+  -d '{"request_id":"j4l35j4K"}'
 ```
 
 > The above command returns JSON structured like this:
