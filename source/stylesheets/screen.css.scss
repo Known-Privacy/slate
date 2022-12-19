@@ -76,6 +76,8 @@ html, body {
     display: block;
     max-width: 100%;
     margin-bottom: $logo-margin;
+    padding: 2em;
+    width: $nav-width - ($nav-padding*4);
   }
 
   &>.search {
