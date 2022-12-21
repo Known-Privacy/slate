@@ -25,7 +25,7 @@ Handling privacy requests via email can be onerous and difficult to automate. Th
 ### How it works
 The Opt-Out Machine will still send an email message for each request. Included in the headers of the email message is a unique identifier field for the request under the comments header: `oom-request-id`. This identifier also appears at the bottom of the footer, where it is more easily human-readable.
 
-All of the information contained in the email can also be retrieved from the API. This enables systems to simply gather the request ID from the email message, then separately use a programmatic approach to collect the rest of the details without the need to parse them out of an email.
+The API can be used for fulfillment of requests. All of the information contained in the email can also be retrieved from the API. This enables systems to simply gather the request ID from the email message, then separately use a programmatic approach to collect the rest of the details without the need to parse them out of an email. Later, updates around acknowledgement and fulfillment of request can be automated and sent to the API instead of corresponding via email.
 
 # Authentication
 
@@ -59,7 +59,7 @@ curl "https://app.knownprivacy.com/api/v1/requests/20221216" \
 
 ```json
 {
-  data: [
+  "data": [
     {
       "file_count": 0,
       "id": "j4l35j4K",
@@ -141,7 +141,7 @@ curl "https://app.knownprivacy.com/api/v1/requests/j4l35j4K" \
 
 ```json
 {
-  data: {
+  "data": {
     "file_count": 0,
     "id": "j4l35j4K",
     "request_types": ["access", "opt-out"],
@@ -229,7 +229,7 @@ curl "https://app.knownprivacy.com/api/v1/requests/j4l35j4K" \
 
 ```json
 {
-  data: {
+  "data": {
     "file_count": 0,
     "id": "j4l35j4K",
     "request_types": ["access", "opt-out"],
