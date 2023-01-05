@@ -20,12 +20,12 @@ meta:
 ---
 
 # Introduction
-Handling privacy requests via email can be onerous and difficult to automate. The Opt-Out Machine provides API access to organizations that wish to make use of it.
+Handling privacy requests via email can be onerous and difficult to automate. The Opt-Out Machine provides API access to organizations that wish to create automation or integration with existing installed solutions.
 
 ### How it works
 The Opt-Out Machine will still send an email message for each request. Included in the headers of the email message is a unique identifier field for the request under the comments header: `oom-request-id`. This identifier also appears at the bottom of the footer, where it is more easily human-readable.
 
-The API can be used for fulfillment of requests. All of the information contained in the email can also be retrieved from the API. This enables systems to simply gather the request ID from the email message, then separately use a programmatic approach to collect the rest of the details without the need to parse them out of an email. Later, updates around acknowledgement and fulfillment of request can be automated and sent to the API instead of corresponding via email.
+The API can be used for fulfillment of requests. All of the information contained in the email can also be retrieved from the API. This enables systems to gather the request ID from the email message, then separately use a programmatic approach to collect the rest of the details without the need to parse them out of an email. Later, updates around acknowledgement and fulfillment of requests can be automated and sent to the API instead of corresponding via email.
 
 # Authentication
 
@@ -51,7 +51,7 @@ You must replace <code>meowmeowmeow</code> with your API key.
 ## Get all Requests by date
 
 ```shell
-curl "https://app.knownprivacy.com/api/v1/requests/20221216" \
+curl "https://app.knownprivacy.com/api/v1/requests/20221216?page=2" \
   -H "Authorization: meowmeowmeow"
 ```
 
@@ -112,7 +112,10 @@ curl "https://app.knownprivacy.com/api/v1/requests/20221216" \
         }
       }
     }
-  ]
+  ],
+  "page_number": 2,
+  "total_entries": 351,
+  "total_pages": 8
 }
 ```
 
@@ -196,7 +199,9 @@ curl "https://app.knownprivacy.com/api/v1/ack" \
 
 ```json
 {
-  "success": true
+  "data": {
+    "success": true
+  }
 }
 ```
 
@@ -222,7 +227,7 @@ curl "https://app.knownprivacy.com/api/v1/requests/j4l35j4K" \
   -X PATCH \
   -H "Content-Type: application/json" \
   -H "Authorization: meowmeowmeow"
-  -d '{"opt_out_completed": "true", "state": "fulfilled_with_data"}'
+  -d '{"opt_out_completed": "true", "state": "fulfilled_with_data", "comments": "Please find personal data file sent separately."}'
 ```
 
 > The above command returns JSON structured like this:
@@ -269,6 +274,47 @@ This endpoint updates a specific `request`. Fields that may be updated include `
 Parameter | Description
 --------- | -----------
 opt_out_completed | Boolean string indicating whether an opt-out was fulfilled.
+comments | Comments or follow up questions regarding the request. May be up to 250 characters in length.
+state | The status of the request. Values may include: `failed`, `failed_on_id_verification`, `failed_on_legality`, `fulfilled`, `fulfilled_no_record`, `fulfilled_with_data`
+
+
+## Update Multiple Requests (bulk update)
+
+```shell
+curl "https://app.knownprivacy.com/api/v1/requests" \
+  -X PATCH \
+  -H "Content-Type: application/json" \
+  -H "Authorization: meowmeowmeow"
+  -d '[
+      {"id": "j4l35j4K", "opt_out_completed": "true", "state": "fulfilled_with_data"},
+      {"id": "46m4b74f", "opt_out_completed": "true", "state": "fulfilled_with_data"}
+  ]'
+```
+
+> The above command returns JSON structured like this:
+
+```json
+{
+  "data": [
+    {"id": "j4l35j4K", "update_received": "true", "errors": []},
+    {"id": "46m4b74f", "update_received": "true", "errors": []}
+  ]
+}
+```
+
+This endpoint accepts updates for multiple `request` records at once. Fields that may be updated for each request include `opt_out_completed` and `state`.
+
+### HTTP Request
+
+`PUT/PATCH https://app.knownprivacy.com/api/v1/requests`
+
+### Item Parameters
+
+Parameter | Description
+--------- | -----------
+id | Request ID to be updated.
+opt_out_completed | Boolean string indicating whether an opt-out was fulfilled.
+comments | Comments or follow up questions regarding the request. May be up to 250 characters in length.
 state | The status of the request. Values may include: `failed`, `failed_on_id_verification`, `failed_on_legality`, `fulfilled`, `fulfilled_no_record`, `fulfilled_with_data`
 
 
@@ -287,7 +333,9 @@ curl "https://app.knownprivacy.com/api/v1/files" \
 
 ```json
 {
-  "success": true
+  "data": {
+    "success": true
+  }
 }
 ```
 
