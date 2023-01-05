@@ -338,6 +338,9 @@
                   <li>
                     <a href="#update-a-specific-request" class="toc-h2 toc-link" data-title="Update a Specific Request">Update a Specific Request</a>
                   </li>
+                  <li>
+                    <a href="#update-multiple-requests-bulk-update" class="toc-h2 toc-link" data-title="Update Multiple Requests (bulk update)">Update Multiple Requests (bulk update)</a>
+                  </li>
               </ul>
           </li>
           <li>
@@ -360,11 +363,11 @@
       <div class="dark-box"></div>
       <div class="content">
         <h1 id='introduction'>Introduction</h1>
-<p>Handling privacy requests via email can be onerous and difficult to automate. The Opt-Out Machine provides API access to organizations that wish to make use of it.</p>
+<p>Handling privacy requests via email can be onerous and difficult to automate. The Opt-Out Machine provides API access to organizations that wish to create automation or integration with existing installed solutions.</p>
 <h3 id='how-it-works'>How it works</h3>
 <p>The Opt-Out Machine will still send an email message for each request. Included in the headers of the email message is a unique identifier field for the request under the comments header: <code>oom-request-id</code>. This identifier also appears at the bottom of the footer, where it is more easily human-readable.</p>
 
-<p>The API can be used for fulfillment of requests. All of the information contained in the email can also be retrieved from the API. This enables systems to simply gather the request ID from the email message, then separately use a programmatic approach to collect the rest of the details without the need to parse them out of an email. Later, updates around acknowledgement and fulfillment of request can be automated and sent to the API instead of corresponding via email.</p>
+<p>The API can be used for fulfillment of requests. All of the information contained in the email can also be retrieved from the API. This enables systems to gather the request ID from the email message, then separately use a programmatic approach to collect the rest of the details without the need to parse them out of an email. Later, updates around acknowledgement and fulfillment of requests can be automated and sent to the API instead of corresponding via email.</p>
 <h1 id='authentication'>Authentication</h1><div class="highlight"><pre class="highlight shell tab-shell"><code><span class="c"># With shell, you can just pass the correct header with each request</span>
 curl <span class="s2">"api_endpoint_here"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: meowmeowmeow"</span>
@@ -382,7 +385,7 @@ curl <span class="s2">"api_endpoint_here"</span> <span class="se">\</span>
 <aside class="notice">
 You must replace <code>meowmeowmeow</code> with your API key.
 </aside>
-<h1 id='requests'>Requests</h1><h2 id='get-all-requests-by-date'>Get all Requests by date</h2><div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="s2">"https://app.knownprivacy.com/api/v1/requests/20221216"</span> <span class="se">\</span>
+<h1 id='requests'>Requests</h1><h2 id='get-all-requests-by-date'>Get all Requests by date</h2><div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="s2">"https://app.knownprivacy.com/api/v1/requests/20221216?page=2"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: meowmeowmeow"</span>
 </code></pre></div>
 <blockquote>
@@ -442,7 +445,10 @@ You must replace <code>meowmeowmeow</code> with your API key.
         </span><span class="p">}</span><span class="w">
       </span><span class="p">}</span><span class="w">
     </span><span class="p">}</span><span class="w">
-  </span><span class="p">]</span><span class="w">
+  </span><span class="p">],</span><span class="w">
+  </span><span class="nl">"page_number"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"total_entries"</span><span class="p">:</span><span class="w"> </span><span class="mi">351</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"total_pages"</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre></div>
 <p>This endpoint retrieves all requests that were sent on a given date.</p>
@@ -530,7 +536,9 @@ You must replace <code>meowmeowmeow</code> with your API key.
 <p>The above command returns JSON structured like this:</p>
 </blockquote>
 <div class="highlight"><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="nl">"success"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+  </span><span class="nl">"data"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"success"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+  </span><span class="p">}</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre></div>
 <p>This endpoint creates an acknowledgement for a specific <code>request</code>. This will simply assign an acknowledgement to the request for the purposes of both the customer&#39;s information and for the company&#39;s compliance record.</p>
@@ -552,7 +560,7 @@ You must replace <code>meowmeowmeow</code> with your API key.
   <span class="nt">-X</span> PATCH <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Authorization: meowmeowmeow"</span>
-  <span class="nt">-d</span> <span class="s1">'{"opt_out_completed": "true", "state": "fulfilled_with_data"}'</span>
+  <span class="nt">-d</span> <span class="s1">'{"opt_out_completed": "true", "state": "fulfilled_with_data", "comments": "Please find personal data file sent separately."}'</span>
 </code></pre></div>
 <blockquote>
 <p>The above command returns JSON structured like this:</p>
@@ -601,6 +609,56 @@ You must replace <code>meowmeowmeow</code> with your API key.
 <td>Boolean string indicating whether an opt-out was fulfilled.</td>
 </tr>
 <tr>
+<td>comments</td>
+<td>Comments or follow up questions regarding the request. May be up to 250 characters in length.</td>
+</tr>
+<tr>
+<td>state</td>
+<td>The status of the request. Values may include: <code>failed</code>, <code>failed_on_id_verification</code>, <code>failed_on_legality</code>, <code>fulfilled</code>, <code>fulfilled_no_record</code>, <code>fulfilled_with_data</code></td>
+</tr>
+</tbody></table>
+<h2 id='update-multiple-requests-bulk-update'>Update Multiple Requests (bulk update)</h2><div class="highlight"><pre class="highlight shell tab-shell"><code>curl <span class="s2">"https://app.knownprivacy.com/api/v1/requests"</span> <span class="se">\</span>
+  <span class="nt">-X</span> PATCH <span class="se">\</span>
+  <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
+  <span class="nt">-H</span> <span class="s2">"Authorization: meowmeowmeow"</span>
+  <span class="nt">-d</span> <span class="s1">'[
+      {"id": "j4l35j4K", "opt_out_completed": "true", "state": "fulfilled_with_data"},
+      {"id": "46m4b74f", "opt_out_completed": "true", "state": "fulfilled_with_data"}
+  ]'</span>
+</code></pre></div>
+<blockquote>
+<p>The above command returns JSON structured like this:</p>
+</blockquote>
+<div class="highlight"><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"data"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"j4l35j4K"</span><span class="p">,</span><span class="w"> </span><span class="nl">"update_received"</span><span class="p">:</span><span class="w"> </span><span class="s2">"true"</span><span class="p">,</span><span class="w"> </span><span class="nl">"errors"</span><span class="p">:</span><span class="w"> </span><span class="p">[]},</span><span class="w">
+    </span><span class="p">{</span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"46m4b74f"</span><span class="p">,</span><span class="w"> </span><span class="nl">"update_received"</span><span class="p">:</span><span class="w"> </span><span class="s2">"true"</span><span class="p">,</span><span class="w"> </span><span class="nl">"errors"</span><span class="p">:</span><span class="w"> </span><span class="p">[]}</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>
+<p>This endpoint accepts updates for multiple <code>request</code> records at once. Fields that may be updated for each request include <code>opt_out_completed</code> and <code>state</code>.</p>
+<h3 id='http-request-5'>HTTP Request</h3>
+<p><code>PUT/PATCH https://app.knownprivacy.com/api/v1/requests</code></p>
+<h3 id='item-parameters'>Item Parameters</h3>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>id</td>
+<td>Request ID to be updated.</td>
+</tr>
+<tr>
+<td>opt_out_completed</td>
+<td>Boolean string indicating whether an opt-out was fulfilled.</td>
+</tr>
+<tr>
+<td>comments</td>
+<td>Comments or follow up questions regarding the request. May be up to 250 characters in length.</td>
+</tr>
+<tr>
 <td>state</td>
 <td>The status of the request. Values may include: <code>failed</code>, <code>failed_on_id_verification</code>, <code>failed_on_legality</code>, <code>fulfilled</code>, <code>fulfilled_no_record</code>, <code>fulfilled_with_data</code></td>
 </tr>
@@ -615,11 +673,13 @@ You must replace <code>meowmeowmeow</code> with your API key.
 <p>The above command returns JSON structured like this:</p>
 </blockquote>
 <div class="highlight"><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
-  </span><span class="nl">"success"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+  </span><span class="nl">"data"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"success"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+  </span><span class="p">}</span><span class="w">
 </span><span class="p">}</span><span class="w">
 </span></code></pre></div>
 <p>This endpoint enables data uploads pertaining to a particular &quot;right-to-know&quot; or &quot;access&quot; request.</p>
-<h3 id='http-request-5'>HTTP Request</h3>
+<h3 id='http-request-6'>HTTP Request</h3>
 <p><code>POST https://app.knownprivacy.com/api/v1/files</code></p>
 <h3 id='parameters-3'>Parameters</h3>
 <table><thead>
